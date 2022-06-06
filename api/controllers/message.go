@@ -10,6 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/mrinjamul/go-secret/models"
 	"github.com/mrinjamul/go-secret/repository"
+	"github.com/mrinjamul/go-secret/utils"
 )
 
 type Message interface {
@@ -36,11 +37,13 @@ func (m *message) Add(ctx *gin.Context) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	message.Hash = utils.GenerateHash()
 	err = m.messageRepo.Add(ctx, &message)
 	if err != nil {
 		ctx.JSON(http.StatusNotFound, gin.H{
 			"status":  "error",
 			"message": "failed to create message",
+			"error":   err.Error(),
 		})
 	}
 	ctx.JSON(http.StatusOK, message)
@@ -61,10 +64,11 @@ func (m *message) Get(ctx *gin.Context) {
 	message, err = m.messageRepo.Get(ctx, message)
 	if err != nil {
 		ctx.JSON(http.StatusNotFound, gin.H{
-			"message": "Message not found",
+			"message": err.Error(),
 		})
+	} else {
+		ctx.JSON(http.StatusOK, message)
 	}
-	ctx.JSON(http.StatusOK, message)
 }
 
 // GetAndRead gets a message and mark it as read
@@ -77,10 +81,11 @@ func (m *message) GetAndRead(ctx *gin.Context) {
 	message, err := m.messageRepo.GetAndRead(ctx, message)
 	if err != nil {
 		ctx.JSON(http.StatusNotFound, gin.H{
-			"message": "Message not found",
+			"message": err.Error(),
 		})
+	} else {
+		ctx.JSON(http.StatusOK, message)
 	}
-	ctx.JSON(http.StatusOK, message)
 }
 
 // GetAll gets all messages
@@ -88,7 +93,7 @@ func (m *message) GetAll(ctx *gin.Context) {
 	messages, err := m.messageRepo.GetAll(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusNotFound, gin.H{
-			"message": "Message not found",
+			"message": err.Error(),
 		})
 	}
 	ctx.JSON(http.StatusOK, messages)
@@ -114,10 +119,11 @@ func (m *message) Update(ctx *gin.Context) {
 	err = m.messageRepo.Update(ctx, &message)
 	if err != nil {
 		ctx.JSON(http.StatusNotFound, gin.H{
-			"message": "Message not found",
+			"message": err.Error(),
 		})
+	} else {
+		ctx.JSON(http.StatusOK, message)
 	}
-	ctx.JSON(http.StatusOK, message)
 }
 
 // Delete deletes a message
@@ -134,13 +140,14 @@ func (m *message) Delete(ctx *gin.Context) {
 	err = m.messageRepo.Delete(ctx, &message)
 	if err != nil {
 		ctx.JSON(http.StatusNotFound, gin.H{
-			"message": "Message not found",
+			"message": err.Error(),
+		})
+	} else {
+		ctx.JSON(http.StatusOK, gin.H{
+			"status":  "success",
+			"message": "Message deleted",
 		})
 	}
-	ctx.JSON(http.StatusOK, gin.H{
-		"status":  "success",
-		"message": "Message deleted",
-	})
 }
 
 // NewMessage returns a new message controller

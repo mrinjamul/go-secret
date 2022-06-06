@@ -7,7 +7,7 @@ import (
 // Message struct
 type Message struct {
 	ID        int64     `json:"id"`
-	UserId    int64     `json:"user_id"`
+	UserId    int64     `json:"userid"`
 	UserName  string    `json:"username"`
 	Hash      string    `json:"hash"`
 	Message   string    `json:"message"`
