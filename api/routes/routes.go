@@ -39,23 +39,31 @@ func InitRoutes(routes *gin.Engine) {
 			})
 
 		})
-		api.GET("/message", func(ctx *gin.Context) {
-			svc.MessageService().GetAll(ctx)
-		})
-		api.GET("/message/:id", func(ctx *gin.Context) {
-			svc.MessageService().Get(ctx)
-		})
-		api.POST("/message", func(ctx *gin.Context) {
-			svc.MessageService().Add(ctx)
-		})
-		api.PUT("/message/:id", func(ctx *gin.Context) {
-			svc.MessageService().Update(ctx)
-		})
-		api.DELETE("/message", func(ctx *gin.Context) {
-			svc.MessageService().Delete(ctx)
-		})
+		// Get messages by unique hash
 		api.GET("/:hash", func(ctx *gin.Context) {
 			svc.MessageService().GetAndRead(ctx)
 		})
+		// Add a new message
+		api.POST("/message", func(ctx *gin.Context) {
+			svc.MessageService().Add(ctx)
+		})
+		// {
+		// 	// Get all messages
+		// 	api.GET("/message", func(ctx *gin.Context) {
+		// 		svc.MessageService().GetAll(ctx)
+		// 	})
+		// 	// Get a message
+		// 	api.GET("/message/:id", func(ctx *gin.Context) {
+		// 		svc.MessageService().Get(ctx)
+		// 	})
+		// 	// Update a message
+		// 	api.PUT("/message/:id", func(ctx *gin.Context) {
+		// 		svc.MessageService().Update(ctx)
+		// 	})
+		// 	// Delete a message
+		// 	api.DELETE("/message", func(ctx *gin.Context) {
+		// 		svc.MessageService().Delete(ctx)
+		// 	})
+		// }
 	}
 }
