@@ -2,6 +2,7 @@ package repository
 
 import (
 	"errors"
+	"time"
 
 	"gorm.io/gorm"
 
@@ -74,9 +75,14 @@ func (repo *messageRepo) GetAndRead(ctx *gin.Context, msg models.Message) (model
 		return msg, errors.New("message not found")
 	}
 	if msg.Deleted {
-		return msg, errors.New("message is deleted")
+		// if deleted more than 30 seconds ago, then return the message
+		if time.Since(msg.DeletedAt).Seconds() > 30 {
+			return msg, errors.New("message is deleted")
+		}
+		// return msg, errors.New("message is deleted")
 	}
 	msg.Deleted = true
+	msg.DeletedAt = time.Now()
 	result = repo.db.Save(&msg)
 	if result.Error != nil {
 		return msg, result.Error

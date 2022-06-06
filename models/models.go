@@ -12,6 +12,7 @@ type Message struct {
 	Hash      string    `json:"hash"`
 	Message   string    `json:"message"`
 	Deleted   bool      `json:"deleted"`
+	DeletedAt time.Time `json:"deleted_at"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
