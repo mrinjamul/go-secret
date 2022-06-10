@@ -45,8 +45,9 @@ func (m *message) Add(ctx *gin.Context) {
 			"message": "failed to create message",
 			"error":   err.Error(),
 		})
+	} else {
+		ctx.JSON(http.StatusOK, message)
 	}
-	ctx.JSON(http.StatusOK, message)
 }
 
 // Get gets a message

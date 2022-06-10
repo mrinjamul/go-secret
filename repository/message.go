@@ -25,6 +25,7 @@ type messageRepo struct {
 
 // Add a new Message
 func (repo *messageRepo) Add(ctx *gin.Context, msg *models.Message) error {
+	var existingMessage models.Message
 	// check if message is valid
 	if msg.Message == "" {
 		return errors.New("message is empty")
@@ -34,19 +35,24 @@ func (repo *messageRepo) Add(ctx *gin.Context, msg *models.Message) error {
 		msg.UserName = "anonymous"
 	}
 	// check if message is already exists
-	result := repo.db.Find(&msg, "message = ?", msg.Message)
+	result := repo.db.Find(&existingMessage, "message = ?", msg.Message)
 	if result.Error != nil {
 		return result.Error
 	}
-	if msg.ID > 0 {
+	if existingMessage.ID > 0 {
 		// then update the message to unread
-		msg.Deleted = false
+		existingMessage.Deleted = false
+		// set deleted at to nil
+		existingMessage.DeletedAt = time.Time{}
+		// change sender if any changes
+		existingMessage.UserName = msg.UserName
 		// update the message
-		result = repo.db.Save(&msg)
+		result = repo.db.Save(&existingMessage)
 		if result.Error != nil {
 			return result.Error
 		}
-		return errors.New("message already exists")
+		// "message already exists"
+		return nil
 	}
 	result = repo.db.Omit("ID").Create(&msg)
 	if result.Error != nil {
@@ -80,9 +86,10 @@ func (repo *messageRepo) GetAndRead(ctx *gin.Context, msg models.Message) (model
 			return msg, errors.New("message is deleted")
 		}
 		// return msg, errors.New("message is deleted")
+	} else {
+		msg.DeletedAt = time.Now()
 	}
 	msg.Deleted = true
-	msg.DeletedAt = time.Now()
 	result = repo.db.Save(&msg)
 	if result.Error != nil {
 		return msg, result.Error
