@@ -198,7 +198,7 @@ func (m *message) AddMessage(ctx *gin.Context) {
 	hostname := ctx.Request.Host
 	ctx.HTML(http.StatusOK, "new.html", gin.H{
 		"title": "Secret — New",
-		"link":  hostname + "/" + msg.Hash,
+        "link":  "http://" + hostname + "/" + msg.Hash,
 	})
 }
 

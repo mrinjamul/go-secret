@@ -5,20 +5,11 @@ import (
 	"os"
 	"time"
 
-	"github.com/joho/godotenv"
 	"github.com/mrinjamul/go-secret/api/routes"
 	"github.com/mrinjamul/go-secret/middleware"
 
 	"github.com/gin-gonic/gin"
 )
-
-func init() {
-	// Get ENV variables
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
-}
 
 func main() {
 	// Get port from env
