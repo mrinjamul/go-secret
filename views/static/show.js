@@ -1,5 +1,5 @@
-var count = 15;
-document.getElementById("counter").innerHTML = count;
+var count;
+count = document.getElementById("counter").innerHTML;
 
 var interval = setInterval(function () {
   if (count === 0) {

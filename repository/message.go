@@ -87,7 +87,7 @@ func (repo *messageRepo) GetAndRead(ctx *gin.Context, msg models.Message) (model
 	}
 	if msg.Deleted {
 		// if deleted more than 30 seconds ago, then return the message
-		if time.Since(msg.DeletedAt).Seconds() > 30 {
+		if time.Since(msg.DeletedAt).Seconds() > float64(utils.TimeRequiredToRead(msg.Message)) {
 			return msg, errors.New("message is deleted")
 		}
 		// return msg, errors.New("message is deleted")

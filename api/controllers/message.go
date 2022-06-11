@@ -10,6 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/mrinjamul/go-secret/models"
 	"github.com/mrinjamul/go-secret/repository"
+	"github.com/mrinjamul/go-secret/utils"
 )
 
 type Message interface {
@@ -172,6 +173,7 @@ func (m *message) ShowMessage(ctx *gin.Context) {
 		"title":    "Secret — Show",
 		"username": message.UserName,
 		"message":  message.Message,
+		"count":    utils.TimeRequiredToRead(message.Message),
 	})
 }
 
@@ -198,7 +200,7 @@ func (m *message) AddMessage(ctx *gin.Context) {
 	hostname := ctx.Request.Host
 	ctx.HTML(http.StatusOK, "new.html", gin.H{
 		"title": "Secret — New",
-        "link":  "http://" + hostname + "/" + msg.Hash,
+		"link":  "http://" + hostname + "/" + msg.Hash,
 	})
 }
 

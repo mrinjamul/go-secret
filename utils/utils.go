@@ -2,6 +2,7 @@ package utils
 
 import (
 	"crypto/rand"
+	"strings"
 )
 
 // RandomChars generates a random string of length n
@@ -44,4 +45,22 @@ func RandomChars(length int) string {
 func GenerateHash() string {
 	// generate unique short url using url
 	return RandomChars(5)
+}
+
+// CountWords in a string
+func CountWords(s string) int {
+	return len(strings.Fields(s))
+}
+
+// TimeRequiredToRead returns the time required to read a string
+// func TimeRequiredToRead(s string) float64 {
+// 	return float64(len(s)) / 1000
+// }
+func TimeRequiredToRead(s string) int {
+	count := CountWords(s)
+	count = (count + 2) / 2
+	if count < 5 {
+		count = 5
+	}
+	return count
 }
