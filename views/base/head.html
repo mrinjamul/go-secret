@@ -1,0 +1,34 @@
+<!--header.html-->
+<head>
+  <!--Use the `title` variable to set the title of the page-->
+  <title>{{ .title }}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8" />
+
+  <!--Use the fonts-->
+  <link
+    href="https://fonts.googleapis.com/css?family=Montserrat"
+    rel="stylesheet"
+    type="text/css"
+  />
+  <!--Use tailwind to make the application look nice-->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            clifford: "#da373d",
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    @layer base {
+      body {
+        font-family: "Montserrat";
+      }
+    }
+  </style>
+</head>

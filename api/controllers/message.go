@@ -10,7 +10,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/mrinjamul/go-secret/models"
 	"github.com/mrinjamul/go-secret/repository"
-	"github.com/mrinjamul/go-secret/utils"
 )
 
 type Message interface {
@@ -20,6 +19,9 @@ type Message interface {
 	GetAll(ctx *gin.Context)
 	Update(ctx *gin.Context)
 	Delete(ctx *gin.Context)
+	// views
+	ShowMessage(ctx *gin.Context)
+	AddMessage(ctx *gin.Context)
 }
 
 type message struct {
@@ -37,8 +39,7 @@ func (m *message) Add(ctx *gin.Context) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	message.Hash = utils.GenerateHash()
-	err = m.messageRepo.Add(ctx, &message)
+	message, err = m.messageRepo.Add(ctx, &message)
 	if err != nil {
 		ctx.JSON(http.StatusNotFound, gin.H{
 			"status":  "error",
@@ -149,6 +150,56 @@ func (m *message) Delete(ctx *gin.Context) {
 			"message": "Message deleted",
 		})
 	}
+}
+
+// For views
+func (m *message) ShowMessage(ctx *gin.Context) {
+	// get hash from parameter
+	hash := ctx.Param("hash")
+	message := models.Message{
+		Hash: hash,
+	}
+	message, err := m.messageRepo.GetAndRead(ctx, message)
+
+	if err != nil {
+		ctx.HTML(http.StatusNotFound, "404.html", gin.H{
+			"title": "Secret — 404",
+		})
+		log.Println(err)
+		return
+	}
+	ctx.HTML(http.StatusOK, "show.html", gin.H{
+		"title":    "Secret — Show",
+		"username": message.UserName,
+		"message":  message.Message,
+	})
+}
+
+func (m *message) AddMessage(ctx *gin.Context) {
+	var msg models.Message
+	// get the form values
+	msg.UserName = ctx.PostForm("username")
+	msg.Message = ctx.PostForm("message")
+	if msg.Message == "" {
+		ctx.HTML(http.StatusOK, "404.html", gin.H{
+			"title": "Secret — Error",
+		})
+		return
+	}
+	// create a new secret
+	msg, err := m.messageRepo.Add(ctx, &msg)
+	if err != nil {
+		ctx.HTML(http.StatusOK, "404.html", gin.H{
+			"title": "Secret — Error",
+		})
+		return
+	}
+	// get hostname
+	hostname := ctx.Request.Host
+	ctx.HTML(http.StatusOK, "new.html", gin.H{
+		"title": "Secret — New",
+		"link":  hostname + "/" + msg.Hash,
+	})
 }
 
 // NewMessage returns a new message controller
