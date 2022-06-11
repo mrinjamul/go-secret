@@ -8,15 +8,18 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/mrinjamul/go-secret/models"
+	"github.com/mrinjamul/go-secret/utils"
 )
 
 type MessageRepo interface {
-	Add(ctx *gin.Context, msg *models.Message) error
+	Add(ctx *gin.Context, msg *models.Message) (models.Message, error)
 	Get(ctx *gin.Context, msg models.Message) (models.Message, error)
 	GetAndRead(ctx *gin.Context, msg models.Message) (models.Message, error)
 	GetAll(ctx *gin.Context) ([]models.Message, error)
 	Update(ctx *gin.Context, msg *models.Message) error
 	Delete(ctx *gin.Context, msg *models.Message) error
+	// views
+
 }
 
 type messageRepo struct {
@@ -24,11 +27,11 @@ type messageRepo struct {
 }
 
 // Add a new Message
-func (repo *messageRepo) Add(ctx *gin.Context, msg *models.Message) error {
+func (repo *messageRepo) Add(ctx *gin.Context, msg *models.Message) (models.Message, error) {
 	var existingMessage models.Message
 	// check if message is valid
 	if msg.Message == "" {
-		return errors.New("message is empty")
+		return models.Message{}, errors.New("message is empty")
 	}
 	// if username is empty, set it to anonymous
 	if msg.UserName == "" {
@@ -37,7 +40,7 @@ func (repo *messageRepo) Add(ctx *gin.Context, msg *models.Message) error {
 	// check if message is already exists
 	result := repo.db.Find(&existingMessage, "message = ?", msg.Message)
 	if result.Error != nil {
-		return result.Error
+		return models.Message{}, result.Error
 	}
 	if existingMessage.ID > 0 {
 		// then update the message to unread
@@ -49,16 +52,18 @@ func (repo *messageRepo) Add(ctx *gin.Context, msg *models.Message) error {
 		// update the message
 		result = repo.db.Save(&existingMessage)
 		if result.Error != nil {
-			return result.Error
+			return models.Message{}, result.Error
 		}
+		return existingMessage, nil
 		// "message already exists"
-		return nil
+		// return models.Message{}, nil
 	}
+	msg.Hash = utils.GenerateHash()
 	result = repo.db.Omit("ID").Create(&msg)
 	if result.Error != nil {
-		return result.Error
+		return models.Message{}, result.Error
 	}
-	return nil
+	return *msg, nil
 }
 
 // Get a message by id

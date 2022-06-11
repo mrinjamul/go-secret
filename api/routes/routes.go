@@ -1,9 +1,6 @@
 package routes
 
 import (
-	"embed"
-	"io/fs"
-	"log"
 	"net/http"
 	"time"
 
@@ -11,19 +8,46 @@ import (
 	"github.com/mrinjamul/go-secret/api/services"
 )
 
-// ViewsFs for static files
-var ViewsFs embed.FS
 var StartTime time.Time
 
 func InitRoutes(routes *gin.Engine) {
 	svc := services.NewServices()
 	// Serve the frontend
-	// This will ensure that the files are served correctly
-	fsRoot, err := fs.Sub(ViewsFs, "views")
-	if err != nil {
-		log.Println(err)
-	}
-	routes.NoRoute(gin.WrapH(http.FileServer(http.FS(fsRoot))))
+	// Process the templates at the start so that they don't have to be loaded
+	// from the disk again. This makes serving HTML pages very fast.
+	routes.LoadHTMLGlob("views/**/*")
+	// routes.Static("/static", "static")
+	routes.GET("/", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "index.html", gin.H{
+			"title": "Secret — Home",
+		})
+	})
+	// serve static pages under static folder
+	routes.GET("/static/*filepath", func(c *gin.Context) {
+		c.File("views/static/" + c.Param("filepath"))
+	})
+	routes.GET("/media/*filepath", func(c *gin.Context) {
+		c.File("views/media/" + c.Param("filepath"))
+	})
+	routes.POST("/new", func(ctx *gin.Context) {
+		svc.MessageService().AddMessage(ctx)
+	})
+	routes.GET("/new", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "404.html", gin.H{
+			"title": "Secret — Error",
+		})
+	})
+
+	routes.GET("/:hash", func(ctx *gin.Context) {
+		svc.MessageService().ShowMessage(ctx)
+	})
+
+	// Add 404 page
+	routes.NoRoute(func(c *gin.Context) {
+		c.HTML(http.StatusNotFound, "404.html", gin.H{
+			"title": "Secret — 404",
+		})
+	})
 
 	// api routes group
 	api := routes.Group("/api")

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"embed"
 	"log"
 	"os"
 	"time"
@@ -12,9 +11,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 )
-
-//go:embed views/*
-var viewsFs embed.FS
 
 func init() {
 	// Get ENV variables
@@ -38,7 +34,7 @@ func main() {
 	// Use CORS middleware
 	server.Use(middleware.CORS())
 	// Initialize the routes
-	routes.ViewsFs = viewsFs
+
 	routes.StartTime = time.Now()
 	routes.InitRoutes(server)
 	// Start and run the server

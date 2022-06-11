@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+  {{ template "head.html" . }}
+  <body>
+    <div
+      class="relative flex h-screen flex-col justify-center overflow-hidden bg-gradient-to-t from-green-500 to-cyan-400 py-6 sm:py-12"
+    >
+      <div
+        class="mb-auto flex flex-col items-center justify-center text-slate-800"
+      >
+        <h3 class="m-2">Your Secret is Ready.</h3>
+        <h5 class="m-2">Share the URL with someone.</h5>
+        <input
+          class="m-4 rounded-md p-2"
+          type="text"
+          onClick="this.setSelectionRange(0, this.value.length)"
+          value="{{ .link }}"
+          readonly
+        />
+      </div>
+      {{ template "footer.html" . }}
+    </div>
+  </body>
+</html>
