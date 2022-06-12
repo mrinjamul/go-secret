@@ -6,12 +6,15 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/mrinjamul/go-secret/api/services"
+	"github.com/mrinjamul/go-secret/middleware"
 )
 
 var StartTime time.Time
 
 func InitRoutes(routes *gin.Engine) {
 	svc := services.NewServices()
+	// Add CORS middleware
+	routes.Use(middleware.CORS())
 	// Serve the frontend
 	// Process the templates at the start so that they don't have to be loaded
 	// from the disk again. This makes serving HTML pages very fast.

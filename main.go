@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/mrinjamul/go-secret/api/routes"
-	"github.com/mrinjamul/go-secret/middleware"
 
 	"github.com/gin-gonic/gin"
 )
@@ -22,8 +21,6 @@ func main() {
 
 	// Set the router as the default one shipped with Gin
 	server := gin.Default()
-	// Use CORS middleware
-	server.Use(middleware.CORS())
 	// Initialize the routes
 
 	routes.StartTime = time.Now()
