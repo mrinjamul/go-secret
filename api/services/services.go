@@ -8,14 +8,20 @@ import (
 
 type Services interface {
 	MessageService() controllers.Message
+	HealthCheckService() controllers.HealthCheck
 }
 
 type services struct {
-	message controllers.Message
+	message     controllers.Message
+	healthCheck controllers.HealthCheck
 }
 
 func (svc *services) MessageService() controllers.Message {
 	return svc.message
+}
+
+func (svc *services) HealthCheckService() controllers.HealthCheck {
+	return svc.healthCheck
 }
 
 // NewServices initializes services
@@ -25,5 +31,6 @@ func NewServices() Services {
 		message: controllers.NewMessage(
 			repository.NewMessageRepo(db),
 		),
+		healthCheck: controllers.NewHealthCheck(),
 	}
 }

@@ -9,7 +9,10 @@ import (
 	"github.com/mrinjamul/go-secret/middleware"
 )
 
-var StartTime time.Time
+var (
+	StartTime time.Time
+	BootTime  time.Duration
+)
 
 func InitRoutes(routes *gin.Engine) {
 	svc := services.NewServices()
@@ -20,25 +23,21 @@ func InitRoutes(routes *gin.Engine) {
 	// from the disk again. This makes serving HTML pages very fast.
 	routes.LoadHTMLGlob("views/**/*")
 	// routes.Static("/static", "static")
-	routes.GET("/", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "index.html", gin.H{
-			"title": "Secret — Home",
-		})
+	routes.GET("/", func(ctx *gin.Context) {
+		svc.MessageService().Index(ctx)
 	})
 	// serve static pages under static folder
-	routes.GET("/static/*filepath", func(c *gin.Context) {
-		c.File("views/static/" + c.Param("filepath"))
+	routes.GET("/static/*filepath", func(ctx *gin.Context) {
+		ctx.File("views/static/" + ctx.Param("filepath"))
 	})
-	routes.GET("/media/*filepath", func(c *gin.Context) {
-		c.File("views/media/" + c.Param("filepath"))
+	routes.GET("/media/*filepath", func(ctx *gin.Context) {
+		ctx.File("views/media/" + ctx.Param("filepath"))
 	})
 	routes.POST("/new", func(ctx *gin.Context) {
 		svc.MessageService().AddMessage(ctx)
 	})
-	routes.GET("/new", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "404.html", gin.H{
-			"title": "Secret — Error",
-		})
+	routes.GET("/new", func(ctx *gin.Context) {
+		svc.MessageService().NotFound(ctx)
 	})
 
 	routes.GET("/:hash", func(ctx *gin.Context) {
@@ -46,8 +45,8 @@ func InitRoutes(routes *gin.Engine) {
 	})
 
 	// Add 404 page
-	routes.NoRoute(func(c *gin.Context) {
-		c.HTML(http.StatusNotFound, "404.html", gin.H{
+	routes.NoRoute(func(ctx *gin.Context) {
+		ctx.HTML(http.StatusNotFound, "404.html", gin.H{
 			"title": "Secret — 404",
 		})
 	})
@@ -57,14 +56,8 @@ func InitRoutes(routes *gin.Engine) {
 	// api.Use(middleware.CORSMiddleware())
 	{
 		// health check
-		api.GET("/health", func(c *gin.Context) {
-			c.Header("Cache-Control", "no-cache, no-store, must-revalidate")
-			c.JSON(http.StatusOK, gin.H{
-				"uptime": time.Since(StartTime).String(),
-				"status": "ok",
-				"time":   time.Now().Format(time.RFC3339),
-			})
-
+		api.GET("/health", func(ctx *gin.Context) {
+			svc.HealthCheckService().HealthCheck(ctx, StartTime, BootTime)
 		})
 		// Get messages by unique hash
 		api.GET("/:hash", func(ctx *gin.Context) {

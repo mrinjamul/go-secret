@@ -21,6 +21,8 @@ type Message interface {
 	Update(ctx *gin.Context)
 	Delete(ctx *gin.Context)
 	// views
+	Index(ctx *gin.Context)
+	NotFound(ctx *gin.Context)
 	ShowMessage(ctx *gin.Context)
 	AddMessage(ctx *gin.Context)
 }
@@ -154,6 +156,19 @@ func (m *message) Delete(ctx *gin.Context) {
 }
 
 // For views
+
+func (m *message) Index(ctx *gin.Context) {
+	ctx.HTML(http.StatusOK, "index.html", gin.H{
+		"title": "Secret — Home",
+	})
+}
+
+func (m *message) NotFound(ctx *gin.Context) {
+	ctx.HTML(http.StatusOK, "404.html", gin.H{
+		"title": "Secret — Error",
+	})
+}
+
 func (m *message) ShowMessage(ctx *gin.Context) {
 	// get hash from parameter
 	hash := ctx.Param("hash")

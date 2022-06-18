@@ -2,6 +2,7 @@ package database
 
 import (
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/mrinjamul/go-secret/models"
@@ -50,11 +51,13 @@ func GetDB() *gorm.DB {
 	dest := fmt.Sprintf(
 		"host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=Asia/Kolkata",
 		dbHost, dbUser, dbPassword, dbName, dbPort)
-        db, err := gorm.Open(postgres.Open(dest), &gorm.Config{})
-	if err != nil {
-		panic("failed to connect database")
+	db, err := gorm.Open(postgres.Open(dest), &gorm.Config{})
+	if err == nil {
+		IsConnected = true
+	} else {
+		log.Println("failed to connect database")
 	}
-	IsConnected = true
+
 	// Migrate the schema
 	db.AutoMigrate(&models.Message{})
 	return db
