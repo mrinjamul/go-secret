@@ -24,7 +24,7 @@ func InitRoutes(routes *gin.Engine) {
 	routes.LoadHTMLGlob("views/**/*")
 	// routes.Static("/static", "static")
 	routes.GET("/", func(ctx *gin.Context) {
-		svc.MessageService().Index(ctx)
+		svc.ViewService().Index(ctx)
 	})
 	// serve static pages under static folder
 	routes.GET("/static/*filepath", func(ctx *gin.Context) {
@@ -34,14 +34,14 @@ func InitRoutes(routes *gin.Engine) {
 		ctx.File("views/media/" + ctx.Param("filepath"))
 	})
 	routes.POST("/new", func(ctx *gin.Context) {
-		svc.MessageService().AddMessage(ctx)
+		svc.ViewService().AddMessage(ctx)
 	})
 	routes.GET("/new", func(ctx *gin.Context) {
-		svc.MessageService().NotFound(ctx)
+		svc.ViewService().NotFound(ctx)
 	})
 
 	routes.GET("/:hash", func(ctx *gin.Context) {
-		svc.MessageService().ShowMessage(ctx)
+		svc.ViewService().ShowMessage(ctx)
 	})
 
 	// Add 404 page
