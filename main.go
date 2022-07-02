@@ -9,9 +9,9 @@ import (
 	"os"
 	"time"
 
-	"github.com/mrinjamul/go-secret/api/routes"
-
 	"github.com/gin-gonic/gin"
+	"github.com/mrinjamul/go-secret/api/routes"
+	_ "github.com/mrinjamul/go-utils/tzinit"
 )
 
 //go:embed views/*
