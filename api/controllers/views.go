@@ -29,7 +29,7 @@ func (m *views) Index(ctx *gin.Context) {
 
 func (m *views) NotFound(ctx *gin.Context) {
 	ctx.HTML(http.StatusOK, "404.html", gin.H{
-		"title": "Secret — Error",
+		"title": "Secret — 404",
 	})
 }
 

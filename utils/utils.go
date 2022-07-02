@@ -57,10 +57,11 @@ func CountWords(s string) int {
 // 	return float64(len(s)) / 1000
 // }
 func TimeRequiredToRead(s string) int {
+	detaultDuration := 15
 	count := CountWords(s)
 	count = (count + 2) / 2
-	if count < 5 {
-		count = 5
+	if count < detaultDuration {
+		count = detaultDuration
 	}
 	return count
 }

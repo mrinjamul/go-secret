@@ -1,7 +1,6 @@
 package routes
 
 import (
-	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -21,34 +20,26 @@ func InitRoutes(routes *gin.Engine) {
 	// Serve the frontend
 	// Process the templates at the start so that they don't have to be loaded
 	// from the disk again. This makes serving HTML pages very fast.
-	routes.LoadHTMLGlob("views/**/*")
-	// routes.Static("/static", "static")
+
+	// Home Page
 	routes.GET("/", func(ctx *gin.Context) {
 		svc.ViewService().Index(ctx)
 	})
-	// serve static pages under static folder
-	routes.GET("/static/*filepath", func(ctx *gin.Context) {
-		ctx.File("views/static/" + ctx.Param("filepath"))
-	})
-	routes.GET("/media/*filepath", func(ctx *gin.Context) {
-		ctx.File("views/media/" + ctx.Param("filepath"))
-	})
+	// New Message Page
 	routes.POST("/new", func(ctx *gin.Context) {
 		svc.ViewService().AddMessage(ctx)
 	})
 	routes.GET("/new", func(ctx *gin.Context) {
 		svc.ViewService().NotFound(ctx)
 	})
-
+	// Message Page
 	routes.GET("/:hash", func(ctx *gin.Context) {
 		svc.ViewService().ShowMessage(ctx)
 	})
 
 	// Add 404 page
 	routes.NoRoute(func(ctx *gin.Context) {
-		ctx.HTML(http.StatusNotFound, "404.html", gin.H{
-			"title": "Secret — 404",
-		})
+		svc.ViewService().NotFound(ctx)
 	})
 
 	// api routes group

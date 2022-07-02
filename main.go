@@ -1,7 +1,11 @@
 package main
 
 import (
+	"embed"
+	"html/template"
+	"io/fs"
 	"log"
+	"net/http"
 	"os"
 	"time"
 
@@ -10,7 +14,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+//go:embed views/*
+var files embed.FS
+
 var (
+	// startTime is the time when the server starts
 	startTime time.Time = time.Now()
 )
 
@@ -25,8 +33,20 @@ func main() {
 
 	// Set the router as the default one shipped with Gin
 	server := gin.Default()
-	// Initialize the routes
+	templ := template.Must(template.New("").ParseFS(files, "views/base/*.html", "views/pages/*.html"))
+	server.SetHTMLTemplate(templ)
+	static, err := fs.Sub(files, "views/static")
+	if err != nil {
+		panic(err)
+	}
+	media, err := fs.Sub(files, "views/media")
+	if err != nil {
+		panic(err)
+	}
+	server.StaticFS("/static", http.FS(static))
+	server.StaticFS("/media", http.FS(media))
 
+	// Initialize the routes
 	routes.StartTime = startTime
 	routes.InitRoutes(server)
 	routes.BootTime = time.Since(startTime)
