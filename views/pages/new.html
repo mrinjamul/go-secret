@@ -11,14 +11,22 @@
         <h3 class="m-2">Your Secret is Ready.</h3>
         <h5 class="m-2">Share the URL with someone.</h5>
         <input
+          id="output_url"
           class="m-4 rounded-md p-2"
           type="text"
           onClick="this.setSelectionRange(0, this.value.length)"
           value="{{ .link }}"
           readonly
         />
+        <button
+          id="clipboard"
+          type="button"
+          class="row-auto bg-gray-100 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center"
+          onclick="copyToClipboard('output_url')"
+        ></button>
       </div>
       {{ template "footer.html" . }}
     </div>
+    <script src="/static/new.js" defer></script>
   </body>
 </html>
